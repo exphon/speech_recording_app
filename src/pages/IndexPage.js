@@ -27,22 +27,19 @@ const IndexPage = () => {
     <div className="index-page">
       <div className="welcome-container">
         <h1 className="welcome-title">
-          한국어 말하기 평가 시스템에 오신 것을 환영합니다
+          말하기 녹음 시스템에 오신 것을 환영합니다
         </h1>
         
         <div className="welcome-content">
           <p className="welcome-description">
-            이 시스템은 여러분의 발음과 말하기 능력을 평가하는 도구입니다.
-          </p>
-          <p className="welcome-description">
-            발음평가와 말하기평가 중 선택하여 참가할 수 있습니다.
+            이 시스템은 여러분의 발음을 녹음하는 도구입니다.
           </p>
           
           <div className="evaluation-types">
             <div className="eval-card">
-              <h3>🎤 발음평가</h3>
+              <h3>🎤 발음녹음</h3>
               <div className="info-box">
-                <h4>평가 구성</h4>
+                <h4>녹음 구성</h4>
                 <ul>
                   <li>📝 단어 읽기 (10개)</li>
                   <li>📄 문장 읽기 (3개)</li>
@@ -53,40 +50,14 @@ const IndexPage = () => {
                 className="join-button pronunciation"
                 onClick={handlePronunciationClick}
               >
-                발음평가 참가하기
+                발음 녹음 참가하기
               </button>
             </div>
 
-            <div className="eval-card">
-              <h3>💬 말하기평가</h3>
-              <div className="info-box">
-                <h4>평가 구성</h4>
-                <ul>
-                  <li>💡 주제별 말하기</li>
-                  <li>🗣️ 자유 발화</li>
-                  <li>📊 종합 평가</li>
-                </ul>
-              </div>
-              <button 
-                className="join-button speaking"
-                onClick={handleSpeakingClick}
-              >
-                말하기평가 참가하기
-              </button>
-              <p className="note important-note">* 발음평가를 먼저 완료해야 합니다</p>
-            </div>
           </div>
         </div>
 
-        <div className="score-lookup-section">
-          <button 
-            className="score-lookup-button"
-            onClick={handleScoreLookupClick}
-          >
-            📊 평가 점수 조회하기
-          </button>
-          <p className="lookup-hint">말하기 평가 완료 후 참여자 ID로 점수를 확인하세요</p>
-        </div>
+
 
         <div className="system-info">
           <p>🎤 이 시스템은 마이크 권한이 필요합니다</p>

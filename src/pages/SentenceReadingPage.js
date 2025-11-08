@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import RecordButton from '../components/RecordButton';
-import { sentences } from '../data/pronData';
-import { uploadRecording } from '../services/api';
+import { useRecordings, RECORDING_TYPES } from '../contexts/RecordingContext';
+import { sentences as sentencesKo } from '../data/pronData';
+import { sentences as sentencesEn } from '../data/pronEnData';
+import { logger } from '../utils/logger';
 import './SentenceReadingPage.css';
 
 /**
@@ -21,63 +23,40 @@ const SentenceReadingPage = () => {
   const meta = location.state?.meta;
   const wordRecordings = location.state?.wordRecordings || (location.state?.wordRecording ? [{ id: null, title: '단어 읽기 (10개)' }] : []);
   
+  // 언어에 따라 문장 선택
+  const assessmentLanguage = meta?.assessment_language || 'ko';
+  const sentences = assessmentLanguage === 'en' ? sentencesEn : sentencesKo;
+  
   const currentSentence = sentences[currentIndex];
   const isLastSentence = currentIndex === sentences.length - 1;
   const progress = ((currentIndex + 1) / sentences.length) * 100;
+
+  const { addRecording } = useRecordings();
 
   const handleRecordingComplete = async (audioBlob) => {
     setCurrentRecording(audioBlob);
     setShowPlayback(true);
 
-    // 세션이 없으면 로컬 저장만
-    if (!sessionId) {
-      console.log('⚠️ 세션 없음 - 로컬 저장만 수행');
-      setUploadStatus('success');
-      setRecordings([...recordings, {
-        id: null,
-        sentence: currentSentence,
-        title: `문장 ${currentIndex + 1}: ${currentSentence}`,
-        audio: audioBlob,
-        recordingId: null
-      }]);
-      return;
-    }
-
-    setUploadStatus('uploading');
-
-    try {
-      const title = `문장 ${currentIndex + 1}: ${currentSentence}`;
-      const response = await uploadRecording(audioBlob, title, sessionId, 'sentence', meta, currentSentence);
-      
-      console.log('✅ 업로드 성공:', response);
-      setUploadStatus('success');
-      
-      setRecordings([...recordings, {
-        id: response.id,
-        sentence: currentSentence,
-        title: title,
-        recordingId: response.id
-      }]);
-      
-    } catch (error) {
-      console.error('❌ 업로드 실패:', error);
-      console.error('오류 상세:', error.response?.data || error.message);
-      
-      // 서버 오류 시 로컬 저장으로 폴백
-      console.log('⚠️ 서버 오류 - 로컬 저장으로 전환');
-      setUploadStatus('success');
-      
-      // 로컬에 저장
-      setRecordings([...recordings, {
-        id: null,
-        sentence: currentSentence,
-        title: `문장 ${currentIndex + 1}: ${currentSentence}`,
-        audio: audioBlob,
-        recordingId: null,
-        error: '서버 오류로 로컬 저장됨'
-      }]);
-    }
+    // 로컬 저장만 수행 (서버 업로드 제거)
+    logger.log('✅ 로컬 저장 완료');
+    setUploadStatus('success');
+    
+    setRecordings([...recordings, {
+      id: null,
+      sentence: currentSentence,
+      title: `문장 ${currentIndex + 1}: ${currentSentence}`,
+      audio: audioBlob,
+      recordingId: null
+    }]);
   };
+
+  // 문장 녹음이 성공(서버 업로드 여부와 무관) 시 컨텍스트 저장
+  useEffect(() => {
+    if (showPlayback && currentRecording && uploadStatus === 'success') {
+      addRecording(currentRecording, currentSentence, RECORDING_TYPES.SENTENCE, currentIndex);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showPlayback, uploadStatus]);
 
   const handleNext = () => {
     if (currentRecording && uploadStatus === 'success') {

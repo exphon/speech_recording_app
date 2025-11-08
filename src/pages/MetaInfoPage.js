@@ -1,6 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createSession } from '../services/api';
 import './MetaInfoPage.css';
 
 // 6자리 숫자 ID 생성 (발음평가용 - P_ 접두어)
@@ -20,6 +19,7 @@ const MetaInfoPage = () => {
   const [koreanLearningMonths, setKoreanLearningMonths] = useState(''); // 한국어 학습 기간(개월)
   const [topikLevel, setTopikLevel] = useState(''); // TOPIK 등급
   const [otherTestScore, setOtherTestScore] = useState(''); // 기타 시험 점수
+  const [assessmentLanguage, setAssessmentLanguage] = useState('ko'); // 평가 언어: 'ko' 또는 'en'
 
   const [submitting, setSubmitting] = useState(false);
 
@@ -45,43 +45,19 @@ const MetaInfoPage = () => {
       korean_learning_months: koreanLearningMonths ? Number(koreanLearningMonths) : null,
       topik_level: topikLevel || null,
       other_test_score: otherTestScore || null,
+      assessment_language: assessmentLanguage, // 평가 언어 추가
       created_at: new Date().toISOString(),
     };
 
     setSubmitting(true);
 
-    try {
-      // 세션 생성 시 메타데이터를 함께 전송
-      const sessionName = autoId; // P_123456 형태로 저장
-      const description = '발음평가 (메타정보 포함)';
-      const session = await createSession(sessionName, description, metadata);
-
-      navigate('/word-reading', {
-        state: {
-          sessionId: session.id,
-          meta: metadata,
-        },
-      });
-    } catch (error) {
-      console.error('❌ 세션 생성 실패:', error);
-      const proceed = window.confirm(
-        '서버에 연결할 수 없습니다.\n' +
-          '세션 없이 로컬에서 녹음을 진행하시겠습니까? (메타정보는 함께 유지됩니다)\n\n' +
-          '확인: 로컬 녹음 진행\n' +
-          '취소: 돌아가기'
-      );
-
-      if (proceed) {
-        navigate('/word-reading', {
-          state: {
-            sessionId: null,
-            meta: metadata,
-          },
-        });
-      } else {
-        setSubmitting(false);
-      }
-    }
+    // 로컬 녹음으로 바로 진행 (서버 세션 생성 제거)
+    navigate('/word-reading', {
+      state: {
+        sessionId: null, // 세션 없이 진행
+        meta: metadata,
+      },
+    });
   };
 
   return (
@@ -91,6 +67,23 @@ const MetaInfoPage = () => {
         <p className="meta-subtitle">평가 전에 간단한 정보를 입력해주세요.</p>
 
         <form className="meta-form" onSubmit={handleSubmit}>
+          <div className="form-row">
+            <label>평가 언어 선택 *</label>
+            <select 
+              value={assessmentLanguage} 
+              onChange={(e) => setAssessmentLanguage(e.target.value)}
+              required
+            >
+              <option value="ko">🇰🇷 한국어 (Korean)</option>
+              <option value="en">🇺🇸 영어 (English)</option>
+            </select>
+            <p className="hint language-hint">
+              {assessmentLanguage === 'ko' 
+                ? '✓ 한국어 발음 평가를 진행합니다.' 
+                : '✓ English pronunciation assessment will be conducted.'}
+            </p>
+          </div>
+
           <div className="form-row">
             <label>참여자 ID (발음평가용)</label>
             <div className="id-row">

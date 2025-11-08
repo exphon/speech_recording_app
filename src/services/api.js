@@ -1,32 +1,25 @@
 import axios from 'axios';
+import { logger } from '../utils/logger';
 
-// 쿠키에서 CSRF 토큰 읽기
-function getCookie(name) {
-  if (typeof document === 'undefined') {
-    return null;
-  }
+// API 기본 URL 설정
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://210.125.93.241:8020/api';
 
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) {
-    return parts.pop().split(';').shift();
-  }
-
-  return null;
-}
-
-// API 기본 설정
-// 배포(HTTPS) 환경에서는 '/api'로 프록시(리라이트) 사용, 로컬 개발에서는 .env의 REACT_APP_API_BASE_URL 사용
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
-
+// axios 인스턴스 생성
 const api = axios.create({
   baseURL: API_BASE_URL,
+  timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 60000, // 60초 타임아웃 (음성 처리는 시간이 걸릴 수 있음)
-  withCredentials: true, // ⚠️ 쿠키 전송 허용 (CSRF 토큰용)
 });
+
+// 쿠키에서 특정 값 추출 (CSRF 토큰용)
+const getCookie = (name) => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+};
 
 // 요청 인터셉터: 모든 요청에 CSRF 토큰 추가
 api.interceptors.request.use(
@@ -37,7 +30,7 @@ api.interceptors.request.use(
     const needsCsrf = config.method && ['post', 'put', 'patch', 'delete'].includes(config.method.toLowerCase());
     
     if (needsCsrf) {
-      console.log('🔐 [Request Interceptor]', {
+      logger.log('🔐 [Request Interceptor]', {
         url: config.url,
         method: config.method,
         csrfToken: csrfToken ? `${csrfToken.substring(0, 10)}...` : 'NONE',
@@ -47,8 +40,8 @@ api.interceptors.request.use(
     if (csrfToken) {
       config.headers['X-CSRFToken'] = csrfToken;
     } else if (needsCsrf) {
-      console.warn('⚠️ CSRF token not found for', config.method.toUpperCase(), config.url);
-      console.warn('   Backend may reject this request. Check Django CSRF settings.');
+      logger.warn('⚠️ CSRF token not found for', config.method.toUpperCase(), config.url);
+      logger.warn('   Backend may reject this request. Check Django CSRF settings.');
     }
     return config;
   },
@@ -98,7 +91,7 @@ export const uploadRecording = async (audioBlob, title, sessionId = null, record
       formData.append('original_text', originalText);
     }
 
-    console.log(`📤 Uploading: "${title}" (type: ${recordingType || 'unknown'}, text: ${originalText ? originalText.substring(0, 20) + '...' : 'N/A'})...`);
+    logger.log(`📤 Uploading: "${title}" (type: ${recordingType || 'unknown'}, text: ${originalText ? originalText.substring(0, 20) + '...' : 'N/A'})...`);
     
     const response = await api.post('/recordings/', formData, {
       headers: {
@@ -106,11 +99,11 @@ export const uploadRecording = async (audioBlob, title, sessionId = null, record
       },
     });
 
-    console.log('✅ Upload successful - ID:', response.data.id);
+    logger.log('✅ Upload successful - ID:', response.data.id);
     return response.data;
     
   } catch (error) {
-    console.error('❌ Audio upload error:', {
+    logger.error('❌ Audio upload error:', {
       status: error.response?.status,
       statusText: error.response?.statusText,
       data: error.response?.data,

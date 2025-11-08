@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createSession } from '../services/api';
 import './InstructionPage.css';
 
 /**
@@ -9,10 +8,9 @@ import './InstructionPage.css';
 const InstructionPage = () => {
   const navigate = useNavigate();
   const [agreed, setAgreed] = useState(false);
-  const [creating, setCreating] = useState(false);
 
   const handleAgree = async () => {
-    if (agreed && !creating) {
+    if (agreed) {
       // 메타정보 입력 화면으로 이동 (세션 생성은 그 화면에서 처리)
       navigate('/meta');
     }
@@ -87,16 +85,15 @@ const InstructionPage = () => {
             <button 
               className="back-button"
               onClick={() => navigate('/')}
-              disabled={creating}
             >
               ← 뒤로가기
             </button>
             <button 
               className={`start-button ${agreed ? 'active' : ''}`}
               onClick={handleAgree}
-              disabled={!agreed || creating}
+              disabled={!agreed}
             >
-              {creating ? '세션 생성 중...' : '평가 시작하기 →'}
+              평가 시작하기 →
             </button>
           </div>
         </div>

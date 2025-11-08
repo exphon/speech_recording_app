@@ -1,4 +1,276 @@
+<div align="center">
+
 # 말하기 평가 시스템 (Speech Evaluation System)
+
+학습자 발음 평가를 위한 웹 기반 음성 녹음 & AI 전사/평가 애플리케이션
+
+<p>
+<strong>단어 → 문장 → 문단</strong> 순서로 읽고 녹음하면 Whisper 전사와 (확장 예정) OpenAI 기반 피드백을 제공하며,<br/>
+이제는 <strong>녹음한 음성과 원문 텍스트를 브라우저에서 즉시 WAV / TXT / ZIP</strong> 형태로 내려받을 수 있습니다.
+</p>
+
+</div>
+
+---
+
+## 🗂 목차
+1. [프로젝트 개요](#-프로젝트-개요)
+2. [주요 기능](#-주요-기능)
+3. [녹음 & 다운로드 기능 상세](#-녹음--다운로드-기능-상세)
+4. [기술 스택](#-기술-스택)
+5. [프로젝트 구조](#-프로젝트-구조)
+6. [설치 & 실행](#-설치--실행)
+7. [환경 변수](#-환경-변수-설정)
+8. [데이터 / 처리 흐름](#-데이터-흐름)
+9. [구현 세부 (Audio, API, 상태관리)](#-구현-세부)
+10. [로드맵](#-향후-개발-계획)
+11. [알려진 이슈](#-알려진-이슈)
+12. [기여 & 라이선스](#-기여)
+13. [변경/버전 기록](#-버전--변경-정보)
+
+---
+
+## 📋 프로젝트 개요
+
+사용자가 표시된 텍스트(단어·문장·문단)를 순차적으로 읽어 음성을 녹음하고, (서버 연동 시) 전사 및 발음 평가를 받을 수 있는 **발음 수집 & 품질 측정용 웹 앱**입니다.
+
+| 단계 | 내용 | 특징 |
+|------|------|------|
+| 단어 읽기 | 10개 단어 일괄 녹음 | 한 번의 녹음으로 묶음 처리 |
+| 문장 읽기 | 문장 개별 녹음 | 진행률 & 순차 UI |
+| 문단 읽기 | 1개 문단 전체 녹음 | 마지막 종합 단계 |
+| 완료 페이지 | 전사/평가/다운로드 | Whisper 전사, ZIP 다운로드 |
+
+---
+
+## 🎯 주요 기능
+
+### 핵심
+- 브라우저 **MediaRecorder** 기반 음성 녹음 (에코 제거 / 노이즈 감소 옵션 적용)
+- 전역 컨텍스트로 녹음 Blob & 원문 텍스트 구조적 보관
+- WebM/Ogg → 16‑bit PCM **WAV 변환** (실패 시 원본 포맷 유지)
+- 개별 WAV & TXT 다운로드 + 전체 ZIP 일괄 다운로드(JSZip)
+- Whisper 전사 & (평가 로직 확장 가능) Levenshtein 기반 유사도 계산
+
+### UI/경험
+- 단계 진행률, 안내 메시지, 반응형 레이아웃
+- 완료 페이지에서 녹음/전사/평가 결과 요약
+- 로컬 모드(서버 미연결)에서도 전부 다운로드 가능
+
+### 신뢰성 & 확장성
+- 변환 실패 시 폴백 처리
+- 타입별(recording type) 구조 분리로 향후 스피킹 문제/추가 카테고리 확장 용이
+
+---
+
+## 🎙 녹음 & 다운로드 기능 상세
+
+### 저장 구조 (RecordingContext)
+```ts
+interface RecordingStore {
+  words: { blob: Blob; text: string; filename: string } | null;
+  sentences: Array<{ blob: Blob; text: string; filename: string; index: number }>;
+  paragraph: { blob: Blob; text: string; filename: string } | null;
+}
+```
+
+### WAV 변환 과정
+1. MediaRecorder Blob → ArrayBuffer 로드
+2. AudioContext.decodeAudioData 로 디코딩
+3. 채널 데이터를 16-bit PCM 으로 직렬화
+4. RIFF 헤더 작성 후 Blob(audio/wav) 생성
+5. 예외 발생 시 원본 Blob 사용 (.webm / .ogg)
+
+### 다운로드 옵션
+| 종류 | 제공 파일 | 규칙 |
+|------|-----------|------|
+| 단어 묶음 | words_all.wav / words_all.txt | 전체 단어 CSV 형태(쉼표 구분) |
+| 문장 | sentence_01.wav / sentence_01.txt ... | 두 자리 인덱스 패딩 |
+| 문단 | paragraph.wav / paragraph.txt | 단락 전체 문자열 |
+| ZIP | recordings/ 하위 폴더 구조 | 시간기반 이름 recordings_YYYYMMDDHHMMSS.zip |
+
+### ZIP 구조 예시
+```
+recordings/
+  words/
+    words_all.wav
+    words_all.txt
+  sentences/
+    sentence_01.wav
+    sentence_01.txt
+    sentence_02.wav
+    sentence_02.txt
+  paragraph/
+    paragraph.wav
+    paragraph.txt
+```
+
+### 사용 방법
+1. 단어 → 문장 → 문단 녹음을 완료하고 완료 페이지로 이동
+2. "📥 녹음 파일 다운로드" 섹션에서 개별 또는 ZIP 다운로드 선택
+3. 변환은 즉시 클라이언트에서 수행되며 서버 불필요
+
+### 성능 & 주의사항
+- 긴 녹음(수 분 이상) 변환 시 메모리/CPU 사용량 증가 가능
+- iOS Safari 구형 버전은 MediaRecorder 제약 가능 → 폴백 필요(추후 개선 여지)
+- Web Worker 오프로딩 미적용(필요 시 개선 예정)
+
+### 추가 개선 아이디어
+- 선택 항목만 ZIP 포함 (체크박스)
+- 변환 진행률 & 스피너 UI
+- 샘플레이트/채널 다운샘플 옵션
+- 재생/파형 시각화(예: wavesurfer.js)
+
+---
+
+## 🛠 기술 스택
+
+| 영역 | 사용 기술 |
+|------|-----------|
+| UI | React 19, React Router DOM |
+| 상태 | React Context (RecordingContext) |
+| 네트워크 | Axios |
+| 오디오 캡처 | MediaRecorder API, AudioContext (디코딩) |
+| 빌드 | Create React App (react-scripts) |
+| 번들 추가 | JSZip (ZIP), (FileSaver 대체: a.href 클릭) |
+| 평가 | Levenshtein 거리 기반 점수 계산 (utils/levenshtein.js) |
+| 전사(서버) | Whisper (Django 백엔드 연동 예정) |
+
+---
+
+## 📁 프로젝트 구조
+```
+src/
+  components/
+    RecordButton.js
+    DownloadRecordings.js
+  contexts/
+    RecordingContext.js
+  pages/
+    WordReadingPage.js
+    SentenceReadingPage.js
+    ParagraphReadingPage.js
+    CompletionPage.js
+  services/
+    api.js
+  utils/
+    audioRecorder.js
+    levenshtein.js
+  data/
+    pronData.js
+```
+
+---
+
+## 🚀 설치 & 실행
+```bash
+git clone <repo-url>
+cd speech-recording-app
+npm install
+npm start
+```
+
+### 빌드 (CRA)
+```bash
+npm run build
+```
+현재 Node 22 환경에서 react-scripts 실행 문제가 있을 수 있습니다. 권장: Node 18 LTS.
+
+### Node 버전 맞추기 (nvm 사용 권장)
+```bash
+nvm install 18
+nvm use 18
+node -v   # 18.x 확인
+```
+
+프로젝트 루트에 `.nvmrc` (18) 파일이 추가되어 있으므로 `nvm use` 만으로 자동 적용됩니다.
+
+---
+
+## 🔑 환경 변수 설정
+루트에 `.env` 생성:
+```
+REACT_APP_API_URL=http://210.125.93.241:8020/api
+```
+
+---
+
+## 🔄 데이터 흐름
+```
+사용자 발화 → MediaRecorder 녹음 → Blob/Context 저장 → (선택) 서버 업로드
+  → Whisper 전사 (서버) → 발음 평가(Levenshtein / 확장: OpenAI) → 결과 표시 & 로컬 다운로드
+```
+
+---
+
+## 🔬 구현 세부
+
+### AudioRecorder
+- 권한 요청 + mimeType 호환 탐색 → 시작/중지 → Blob 조립
+
+### RecordingContext
+- 구조화 저장 + WAV 변환 + 다운로드 헬퍼 (downloadBlob, downloadText)
+
+### 전사 & 평가 (서버 필요)
+- `transcribeRecording(recordingId)` → Whisper 결과 저장
+- `evaluatePronunciation` (로컬 Levenshtein) 평균 점수 → 등급(상/중/하)
+
+---
+
+## 🧭 향후 개발 계획
+| Phase | 항목 | 상태 |
+|-------|------|------|
+| 1 | 기본 녹음/페이지/업로드 | ✅ |
+| 2 | 전사 + 평가 + 다운로드 | ✅ (다운로드 포함) |
+| 3 | 적응형 문제, 통계, 인증 | 예정 |
+| 4 | 고급 UX (파형, 진행률, 편집) | 예정 |
+
+---
+
+## 🐛 알려진 이슈
+1. Node 22 + react-scripts 호환 문제 (빌드/테스트 실패 가능)
+2. 긴 녹음 WAV 변환 시 CPU 급상승
+3. iOS MediaRecorder 제약 → 폴백 미구현
+4. 전사/평가 서버 응답 지연 시 사용자 피드백 부족 (로딩 UI 개선 예정)
+
+---
+
+## 👥 기여
+Issue / PR 환영. 코드 스타일: CRA 기본 ESLint 규칙 준수. 대규모 변경 전 이슈로 제안 바랍니다.
+
+## 📝 라이선스
+교육/연구 목적 내부 사용. 별도 명시 없으면 All Rights Reserved.
+
+---
+
+## 🗓 버전 & 변경 정보
+| 버전 | 날짜 | 주요 변경 |
+|------|------|-----------|
+| 1.1.0 | 2025-10-22 | 기본 녹음/업로드/전사 UI |
+| 1.2.0 | 2025-11-08 | WAV 변환 + 개별 & ZIP 다운로드 기능 추가 |
+
+---
+
+## 🙋 FAQ
+**Q. 서버 없이도 쓸 수 있나요?**  가능. 단, 전사/서버 저장 기능은 제한.
+
+**Q. WAV 변환이 오래 걸려요.** 긴 녹음/저사양 기기일 수 있습니다. 향후 Web Worker 지원 예정.
+
+**Q. 다운로드된 파일이 재생 안 돼요.** 일부 플레이어가 opus 변환 실패 폴백(webm/ogg)을 지원하지 않을 수 있습니다.
+
+---
+
+## ✅ 빠른 체크리스트 (운영 전)
+- [ ] Node 18 LTS 사용
+- [ ] `.env` API URL 설정
+- [ ] 서버(Whisper/Django) 가동 확인
+- [ ] 전사/평가 엔드포인트 응답 점검
+- [ ] 긴 녹음(>2분) 변환 테스트
+- [ ] ZIP 다운로드 정상 여부 확인
+
+---
+
+즐거운 개발 되세요! 🚀
 
 음성 녹음 기반의 발음 평가 시스템입니다. 사용자가 단어, 문장, 문단을 읽으면 음성을 녹음하고, 서버로 전송하여 AI 기반 평가 및 피드백을 받을 수 있습니다.
 
@@ -389,3 +661,4 @@ OpenAI API 평가 (서버에서 실행)
 - **새로고침 주의**: 업로드 전 새로고침 시 모든 녹음 삭제됨
 - **서버 필수**: AI 처리(Whisper, OpenAI)는 서버에서만 가능
 
+# speech_recording_app

@@ -49,6 +49,19 @@
   border: 1px solid #ddd;
   border-radius: 10px;
   font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.form-row select[required] {
+  border: 2px solid #667eea;
+  background: #f8f9ff;
+}
+
+.form-row input:focus,
+.form-row select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .id-row {
@@ -78,6 +91,13 @@
 .hint {
   color: #888;
   font-size: 12px;
+  margin-top: 4px;
+}
+
+.hint.language-hint {
+  color: #667eea;
+  font-weight: 600;
+  font-size: 13px;
 }
 
 .form-actions {

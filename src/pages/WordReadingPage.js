@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import RecordButton from '../components/RecordButton';
-import { words } from '../data/pronData';
-import { uploadRecording } from '../services/api';
+import { useRecordings, RECORDING_TYPES } from '../contexts/RecordingContext';
+import { words as wordsKo } from '../data/pronData';
+import { words as wordsEn } from '../data/pronEnData';
+import { logger } from '../utils/logger';
 import './WordReadingPage.css';
 
 /**
@@ -18,6 +20,10 @@ const WordReadingPage = () => {
   const [sessionId, setSessionId] = useState(null);
   const [meta, setMeta] = useState(null);
   const [recordingId, setRecordingId] = useState(null);
+
+  // 언어에 따라 단어 선택
+  const assessmentLanguage = location.state?.meta?.assessment_language || 'ko';
+  const words = assessmentLanguage === 'en' ? wordsEn : wordsKo;
   const [recordingTitle, setRecordingTitle] = useState(`단어 읽기 (${words.length}개)`);
 
   // 세션 ID 가져오기
@@ -26,39 +32,19 @@ const WordReadingPage = () => {
     if (location.state?.meta) setMeta(location.state.meta);
   }, [location.state]);
 
+  const { addRecording } = useRecordings();
+
   const handleRecordingComplete = async (audioBlob) => {
     setRecording(audioBlob);
     setShowPlayback(true);
 
-    // 세션이 없으면 로컬 저장만 하고 업로드 건너뛰기
-    if (!sessionId) {
-      console.log('⚠️ 세션 없음 - 로컬 저장만 수행');
-      setUploadStatus('success');
-      return;
-    }
+    // 로컬 저장만 수행 (서버 업로드 제거)
+    logger.log('✅ 로컬 저장 완료');
+    setUploadStatus('success');
 
-    setUploadStatus('uploading');
-
-    try {
-      // 즉시 서버에 업로드
-      const title = `단어 읽기 (${words.length}개)`;
-      setRecordingTitle(title);
-      // 모든 단어를 공백으로 구분하여 하나의 문자열로 결합
-      const originalText = words.join(', ');
-      const response = await uploadRecording(audioBlob, title, sessionId, 'word', meta, originalText);
-      
-      console.log('✅ 업로드 성공:', response);
-      setUploadStatus('success');
-      setRecordingId(response.id);
-      
-    } catch (error) {
-      console.error('❌ 업로드 실패:', error);
-      console.error('오류 상세:', error.response?.data || error.message);
-      
-      // 서버 오류 시 로컬 저장으로 폴백
-      console.log('⚠️ 서버 오류 - 로컬 저장으로 전환');
-      setUploadStatus('success');
-    }
+    // 컨텍스트에 로컬 녹음 저장
+    const allWordsText = words.join(', ');
+    addRecording(audioBlob, allWordsText, RECORDING_TYPES.WORDS);
   };
 
   const handleNext = () => {

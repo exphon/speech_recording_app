@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import RecordButton from '../components/RecordButton';
-import { paragraph } from '../data/pronData';
-import { uploadRecording } from '../services/api';
+import { useRecordings, RECORDING_TYPES } from '../contexts/RecordingContext';
+import { paragraph as paragraphKo } from '../data/pronData';
+import { paragraph as paragraphEn } from '../data/pronEnData';
+import { logger } from '../utils/logger';
 import './ParagraphReadingPage.css';
 
 /**
@@ -21,37 +23,23 @@ const ParagraphReadingPage = () => {
   const wordRecordings = location.state?.wordRecordings || [];
   const sentenceRecordings = location.state?.sentenceRecordings || [];
 
+  // 언어에 따라 문단 선택
+  const assessmentLanguage = meta?.assessment_language || 'ko';
+  const paragraph = assessmentLanguage === 'en' ? paragraphEn : paragraphKo;
+
+  const { addRecording } = useRecordings();
+
   const handleRecordingComplete = async (audioBlob) => {
     setRecording(audioBlob);
     setShowPlayback(true);
 
-    // 세션이 없으면 로컬 저장만
-    if (!sessionId) {
-      console.log('⚠️ 세션 없음 - 로컬 저장만 수행');
-      setUploadStatus('success');
-      setRecordingId(null);
-      return;
-    }
+    // 로컬 저장만 수행 (서버 업로드 제거)
+    logger.log('✅ 로컬 저장 완료');
+    setUploadStatus('success');
+    setRecordingId(null);
 
-    setUploadStatus('uploading');
-
-    try {
-      const title = '문단 읽기';
-      const response = await uploadRecording(audioBlob, title, sessionId, 'paragraph', meta, paragraph);
-      
-      console.log('✅ 업로드 성공:', response);
-      setUploadStatus('success');
-      setRecordingId(response.id);
-      
-    } catch (error) {
-      console.error('❌ 업로드 실패:', error);
-      console.error('오류 상세:', error.response?.data || error.message);
-      
-      // 서버 오류 시 로컬 저장으로 폴백
-      console.log('⚠️ 서버 오류 - 로컬 저장으로 전환');
-      setUploadStatus('success');
-      setRecordingId(null);
-    }
+    // 컨텍스트에 로컬 녹음 저장
+    addRecording(audioBlob, paragraph, RECORDING_TYPES.PARAGRAPH);
   };
 
   const handleNext = () => {
