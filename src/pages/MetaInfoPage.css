@@ -100,6 +100,22 @@
   font-size: 13px;
 }
 
+.form-section-divider {
+  margin: 20px 0;
+  padding: 16px;
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+  border-left: 4px solid #ff9800;
+  border-radius: 8px;
+}
+
+.section-instruction {
+  margin: 0;
+  color: #e65100;
+  font-weight: 700;
+  font-size: 15px;
+  text-align: center;
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-start;

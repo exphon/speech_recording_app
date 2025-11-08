@@ -1,16 +1,16 @@
 import React, { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './MetaInfoPage.css';
-
-// 6자리 숫자 ID 생성 (발음평가용 - P_ 접두어)
-const generatePronunciationId = () => `P_${String(Math.floor(100000 + Math.random() * 900000))}`;
 
 const currentYear = new Date().getFullYear();
 
 const MetaInfoPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // InstructionPage에서 전달받은 언어 (기본값: 한국어)
+  const assessmentLanguage = location.state?.language || 'ko';
 
-  const [autoId, setAutoId] = useState(generatePronunciationId());
   const [name, setName] = useState('');
   const [birthYear, setBirthYear] = useState('2000');
   const [gender, setGender] = useState(''); // 성별
@@ -19,7 +19,6 @@ const MetaInfoPage = () => {
   const [koreanLearningMonths, setKoreanLearningMonths] = useState(''); // 한국어 학습 기간(개월)
   const [topikLevel, setTopikLevel] = useState(''); // TOPIK 등급
   const [otherTestScore, setOtherTestScore] = useState(''); // 기타 시험 점수
-  const [assessmentLanguage, setAssessmentLanguage] = useState('ko'); // 평가 언어: 'ko' 또는 'en'
 
   const [submitting, setSubmitting] = useState(false);
 
@@ -29,14 +28,11 @@ const MetaInfoPage = () => {
     return list;
   }, []);
 
-  const handleRegenerateId = () => setAutoId(generatePronunciationId());
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (submitting) return;
 
     const metadata = {
-      participant_id: autoId,
       name: name || null,
       birth_year: birthYear || null,
       gender: gender || null,
@@ -63,38 +59,10 @@ const MetaInfoPage = () => {
   return (
     <div className="meta-page">
       <div className="meta-container">
-        <h1 className="meta-title">참여자 메타정보</h1>
+        <h1 className="meta-title">참여자 메타정보 (한국어 발음 평가)</h1>
         <p className="meta-subtitle">평가 전에 간단한 정보를 입력해주세요.</p>
 
         <form className="meta-form" onSubmit={handleSubmit}>
-          <div className="form-row">
-            <label>평가 언어 선택 *</label>
-            <select 
-              value={assessmentLanguage} 
-              onChange={(e) => setAssessmentLanguage(e.target.value)}
-              required
-            >
-              <option value="ko">🇰🇷 한국어 (Korean)</option>
-              <option value="en">🇺🇸 영어 (English)</option>
-            </select>
-            <p className="hint language-hint">
-              {assessmentLanguage === 'ko' 
-                ? '✓ 한국어 발음 평가를 진행합니다.' 
-                : '✓ English pronunciation assessment will be conducted.'}
-            </p>
-          </div>
-
-          <div className="form-row">
-            <label>참여자 ID (발음평가용)</label>
-            <div className="id-row">
-              <input type="text" value={autoId} readOnly />
-              <button type="button" className="regen-btn" onClick={handleRegenerateId}>
-                재생성
-              </button>
-            </div>
-            <p className="hint">P_ 접두어가 붙은 발음평가 전용 ID입니다. (말하기평가는 S_ 접두어)</p>
-          </div>
-
           <div className="form-row">
             <label>이름</label>
             <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="이름" />
@@ -131,8 +99,12 @@ const MetaInfoPage = () => {
             />
           </div>
 
+          <div className="form-section-divider">
+            <p className="section-instruction">아래는 한국어가 모국어가 아닌 경우 작성해 주세요</p>
+          </div>
+
           <div className="form-row">
-            <label>한국 거주 경험</label>
+            <label>한국 거주 경험 (선택)</label>
             <select value={koreaResidence} onChange={(e) => setKoreaResidence(e.target.value)}>
               <option value="">선택하세요</option>
               <option value="무">무</option>
@@ -144,7 +116,7 @@ const MetaInfoPage = () => {
           </div>
 
           <div className="form-row">
-            <label>한국어 학습 기간 (개월)</label>
+            <label>한국어 학습 기간 (개월) (선택)</label>
             <input
               type="number"
               min="0"
@@ -155,7 +127,7 @@ const MetaInfoPage = () => {
           </div>
 
           <div className="form-row">
-            <label>TOPIK 등급</label>
+            <label>TOPIK 등급 (선택)</label>
             <select value={topikLevel} onChange={(e) => setTopikLevel(e.target.value)}>
               <option value="">선택하세요</option>
               <option value="TOPIK I - 1급">TOPIK I - 1급</option>
@@ -169,7 +141,7 @@ const MetaInfoPage = () => {
           </div>
 
           <div className="form-row">
-            <label>기타 한국어 시험 점수</label>
+            <label>기타 한국어 시험 점수 (선택)</label>
             <input
               type="text"
               value={otherTestScore}

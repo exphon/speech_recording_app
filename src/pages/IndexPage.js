@@ -8,9 +8,14 @@ import './IndexPage.css';
 const IndexPage = () => {
   const navigate = useNavigate();
 
-  const handlePronunciationClick = () => {
-    // 발음평가 참가 (기존 플로우)
-    navigate('/instructions');
+  const handleKoreanClick = () => {
+    // 한국어 발음평가 참가
+    navigate('/instructions', { state: { language: 'ko' } });
+  };
+
+  const handleEnglishClick = () => {
+    // 영어 발음평가 참가
+    navigate('/instructions', { state: { language: 'en' } });
   };
 
   return (
@@ -36,12 +41,20 @@ const IndexPage = () => {
                   <li>📖 문단 읽기 (1개)</li>
                 </ul>
               </div>
-              <button 
-                className="join-button pronunciation"
-                onClick={handlePronunciationClick}
-              >
-                발음 녹음 참가하기
-              </button>
+              <div className="language-buttons">
+                <button 
+                  className="join-button korean"
+                  onClick={handleKoreanClick}
+                >
+                  🇰🇷 한국어 발음 녹음 참가하기
+                </button>
+                <button 
+                  className="join-button english"
+                  onClick={handleEnglishClick}
+                >
+                  🇺🇸 영어 발음 녹음 참가하기
+                </button>
+              </div>
             </div>
 
           </div>

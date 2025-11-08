@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './InstructionPage.css';
 
 /**
@@ -7,12 +7,20 @@ import './InstructionPage.css';
  */
 const InstructionPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [agreed, setAgreed] = useState(false);
+  
+  // IndexPage에서 전달받은 언어 설정 (기본값: 한국어)
+  const language = location.state?.language || 'ko';
 
   const handleAgree = async () => {
     if (agreed) {
-      // 메타정보 입력 화면으로 이동 (세션 생성은 그 화면에서 처리)
-      navigate('/meta');
+      // 언어에 따라 다른 메타정보 페이지로 이동
+      if (language === 'en') {
+        navigate('/meta-eng', { state: { language: 'en' } });
+      } else {
+        navigate('/meta', { state: { language: 'ko' } });
+      }
     }
   };
 
@@ -63,9 +71,8 @@ const InstructionPage = () => {
             <h2>🔐 개인정보 처리</h2>
             <div className="instruction-text">
               <p>
-                녹음된 음성 파일은 평가 목적으로만 사용되며, 
-                평가 완료 후 안전하게 삭제됩니다. 
-                수집된 데이터는 연구 및 시스템 개선을 위해 익명으로 처리될 수 있습니다.
+                녹음된 음성 파일은 교육 목적으로만 사용되며, 
+                여러분의 컴퓨터에만 다운로드됩니다.
               </p>
             </div>
           </section>
@@ -89,7 +96,7 @@ const InstructionPage = () => {
               ← 뒤로가기
             </button>
             <button 
-              className={`start-button ${agreed ? 'active' : ''}`}
+              className={`agree-button ${!agreed ? 'disabled' : ''}`}
               onClick={handleAgree}
               disabled={!agreed}
             >

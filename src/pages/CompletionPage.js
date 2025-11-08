@@ -23,14 +23,11 @@ const CompletionPage = () => {
         </h1>
         
         <p className="completion-message">
-          수고하셨습니다. 녹음된 파일은 아래에서 다운로드할 수 있습니다.
+          수고하셨습니다. 녹음된 모든 파일을 다운로드할 수 있습니다.
         </p>
 
         {/* 다운로드 컴포넌트 */}
-        <div className="download-section">
-          <h2>📥 녹음 파일 다운로드</h2>
-          <DownloadRecordings />
-        </div>
+        <DownloadRecordings />
 
         {/* 다시 시작 버튼 */}
         <div className="action-buttons">

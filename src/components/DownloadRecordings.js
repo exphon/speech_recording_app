@@ -4,10 +4,10 @@ import { useRecordings } from '../contexts/RecordingContext';
 import { logger } from '../utils/logger';
 
 /**
- * 모든 녹음 파일 (WAV + TXT) 개별 및 ZIP 다운로드 컴포넌트
+ * 모든 녹음 파일 ZIP 다운로드 컴포넌트
  */
 const DownloadRecordings = () => {
-  const { recordingStore, downloadBlob, downloadText } = useRecordings();
+  const { recordingStore } = useRecordings();
   const [zipping, setZipping] = useState(false);
   const [zipError, setZipError] = useState(null);
   const [zipSuccess, setZipSuccess] = useState(false);
@@ -72,52 +72,53 @@ const DownloadRecordings = () => {
 
   return (
     <div className="download-recordings">
-      <h3>📥 녹음 파일 다운로드</h3>
-      {!hasAny && <p>아직 다운로드할 녹음이 없습니다.</p>}
-
-      {recordingStore.words && (
-        <div className="download-section">
-          <h4>📝 단어 전체</h4>
-          <div className="download-row">
-            <button onClick={() => downloadBlob(recordingStore.words.blob, recordingStore.words.filename)}>WAV 다운로드</button>
-            <button onClick={() => downloadText(recordingStore.words.text, 'words_all.txt')}>TEXT 다운로드</button>
-          </div>
-        </div>
-      )}
-
-      {sentenceSorted.length > 0 && (
-        <div className="download-section">
-          <h4>📄 문장</h4>
-          <ul className="sentence-list">
-            {sentenceSorted.map(s => (
-              <li key={s.index} className="sentence-item">
-                <span>{(s.index + 1).toString().padStart(2, '0')}.</span>
-                <span className="sentence-text">{s.text}</span>
-                <div className="actions">
-                  <button onClick={() => downloadBlob(s.blob, s.filename)}>WAV</button>
-                  <button onClick={() => downloadText(s.text, s.filename.replace(/\.[^.]+$/, '.txt'))}>TXT</button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {recordingStore.paragraph && (
-        <div className="download-section">
-          <h4>📖 문단</h4>
-          <div className="download-row">
-            <button onClick={() => downloadBlob(recordingStore.paragraph.blob, recordingStore.paragraph.filename)}>WAV 다운로드</button>
-            <button onClick={() => downloadText(recordingStore.paragraph.text, 'paragraph.txt')}>TEXT 다운로드</button>
-          </div>
+      {!hasAny && (
+        <div className="no-recordings">
+          <p>아직 다운로드할 녹음이 없습니다.</p>
         </div>
       )}
 
       {hasAny && (
-        <div className="zip-section">
-          <button onClick={handleZipAll} disabled={zipping}>{zipping ? '압축 생성 중...' : '모든 파일 ZIP 다운로드'}</button>
-          {zipError && <p className="error">❌ {zipError}</p>}
-          {zipSuccess && <p className="success">✅ ZIP 다운로드 완료</p>}
+        <div className="zip-download-container">
+          <div className="download-info">
+            <div className="info-icon">📦</div>
+            <div className="info-text">
+              <h3>녹음 파일 준비 완료</h3>
+              <p>모든 녹음 파일(단어, 문장, 문단)과 텍스트가 ZIP 파일로 압축됩니다.</p>
+            </div>
+          </div>
+          
+          <button 
+            className="zip-download-button" 
+            onClick={handleZipAll} 
+            disabled={zipping}
+          >
+            {zipping ? (
+              <>
+                <span className="spinner">⏳</span>
+                <span>압축 생성 중...</span>
+              </>
+            ) : (
+              <>
+                <span className="download-icon">⬇️</span>
+                <span>모든 파일 ZIP 다운로드</span>
+              </>
+            )}
+          </button>
+          
+          {zipError && (
+            <div className="message error">
+              <span>❌</span>
+              <span>오류 발생: {zipError}</span>
+            </div>
+          )}
+          
+          {zipSuccess && (
+            <div className="message success">
+              <span>✅</span>
+              <span>ZIP 파일이 성공적으로 다운로드되었습니다!</span>
+            </div>
+          )}
         </div>
       )}
     </div>
