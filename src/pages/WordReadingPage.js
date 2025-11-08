@@ -19,12 +19,10 @@ const WordReadingPage = () => {
   const [uploadStatus, setUploadStatus] = useState(null); // null | 'uploading' | 'success' | 'error'
   const [sessionId, setSessionId] = useState(null);
   const [meta, setMeta] = useState(null);
-  const [recordingId, setRecordingId] = useState(null);
 
   // 언어에 따라 단어 선택
   const assessmentLanguage = location.state?.meta?.assessment_language || 'ko';
   const words = assessmentLanguage === 'en' ? wordsEn : wordsKo;
-  const [recordingTitle, setRecordingTitle] = useState(`단어 읽기 (${words.length}개)`);
 
   // 세션 ID 가져오기
   useEffect(() => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import RecordButton from '../components/RecordButton';
 import { useRecordings, RECORDING_TYPES } from '../contexts/RecordingContext';

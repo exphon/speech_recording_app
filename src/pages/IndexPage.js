@@ -13,16 +13,6 @@ const IndexPage = () => {
     navigate('/instructions');
   };
 
-  const handleSpeakingClick = () => {
-    // 말하기평가 참가 (새 플로우)
-    navigate('/speaking-login');
-  };
-
-  const handleScoreLookupClick = () => {
-    // 점수 조회 페이지로 이동
-    navigate('/score-lookup');
-  };
-
   return (
     <div className="index-page">
       <div className="welcome-container">
