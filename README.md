@@ -43,23 +43,6 @@
 
 ---
 
-## � 스크린샷
-
-참고용 화면 이미지입니다. 실제 화면은 브라우저/해상도에 따라 다소 다를 수 있습니다.
-
-- 메타정보 입력: ![Meta Info](public/screenshots/meta_info.png)
-- 데이터 선택: ![Set Selection](public/screenshots/set_selection.png)
-- 단어 읽기: ![Word Reading](public/screenshots/word_reading.png)
-- 문장 읽기: ![Sentence Reading](public/screenshots/sentence_reading.png)
-- 문단 읽기: ![Paragraph Reading](public/screenshots/paragraph_reading.png)
-- 완료/다운로드: ![Completion](public/screenshots/completion.png)
-
-이미지 업데이트 방법:
-1) `public/screenshots/` 폴더에 PNG/JPG 추가
-2) 위 파일명에 맞춰 교체 또는 README의 경로를 수정
-3) `git add` → `commit` → `push`
-
----
 
 ## �💻 시스템 요구사항
 
