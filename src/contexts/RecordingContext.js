@@ -11,6 +11,7 @@ export const RECORDING_TYPES = {
 const RecordingContext = createContext();
 
 export const useRecordings = () => useContext(RecordingContext);
+export const useRecording = () => useContext(RecordingContext); // 별칭 추가
 
 /**
  * 녹음 데이터를 전역으로 관리하는 Context
@@ -25,6 +26,9 @@ export const RecordingProvider = ({ children }) => {
   });
   const [participantId, setParticipantId] = useState('');
   const [metadata, setMetadata] = useState(null); // 메타정보 저장
+  const [language, setLanguage] = useState('ko'); // 선택된 언어 (ko/en)
+  const [customData, setCustomData] = useState(null); // 커스텀 업로드 데이터
+  const [customScriptRaw, setCustomScriptRaw] = useState(''); // 업로드한 원본 txt 내용
 
   /**
    * MediaRecorder blob을 WAV로 변환 (webm/ogg → pcm wav)
@@ -201,6 +205,12 @@ export const RecordingProvider = ({ children }) => {
     setParticipantId,
     metadata,
     setMetadata,
+    language,
+    setLanguage,
+    customData,
+    setCustomData,
+    customScriptRaw,
+    setCustomScriptRaw,
     downloadBlob,
     downloadText
   };

@@ -19,19 +19,19 @@ const SentenceReadingPage = () => {
   const [showPlayback, setShowPlayback] = useState(false);
   const [uploadStatus, setUploadStatus] = useState(null);
 
+  const { addRecording, customData } = useRecordings();
+
   const sessionId = location.state?.sessionId;
   const meta = location.state?.meta;
   const wordRecordings = location.state?.wordRecordings || (location.state?.wordRecording ? [{ id: null, title: '단어 읽기 (10개)' }] : []);
   
-  // 언어에 따라 문장 선택
+  // 언어에 따라 문장 선택 (커스텀 데이터 우선)
   const assessmentLanguage = meta?.assessment_language || 'ko';
-  const sentences = assessmentLanguage === 'en' ? sentencesEn : sentencesKo;
+  const sentences = customData?.sentences || (assessmentLanguage === 'en' ? sentencesEn : sentencesKo);
   
   const currentSentence = sentences[currentIndex];
   const isLastSentence = currentIndex === sentences.length - 1;
   const progress = ((currentIndex + 1) / sentences.length) * 100;
-
-  const { addRecording } = useRecordings();
 
   const handleRecordingComplete = async (audioBlob) => {
     setCurrentRecording(audioBlob);

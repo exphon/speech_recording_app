@@ -48,10 +48,9 @@ const MetaInfoEngPage = () => {
     // Context에 메타정보 저장
     setMetadata(metadata);
 
-    // 로컬 녹음으로 바로 진행 (서버 세션 생성 제거)
-    navigate('/word-reading', {
+    // 세트 선택 페이지로 이동
+    navigate('/set-selection', {
       state: {
-        sessionId: null,
         meta: metadata,
       },
     });

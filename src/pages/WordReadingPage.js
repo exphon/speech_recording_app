@@ -20,17 +20,17 @@ const WordReadingPage = () => {
   const [sessionId, setSessionId] = useState(null);
   const [meta, setMeta] = useState(null);
 
-  // 언어에 따라 단어 선택
+  const { addRecording, customData } = useRecordings();
+
+  // 언어에 따라 단어 선택 (커스텀 데이터 우선)
   const assessmentLanguage = location.state?.meta?.assessment_language || 'ko';
-  const words = assessmentLanguage === 'en' ? wordsEn : wordsKo;
+  const words = customData?.words || (assessmentLanguage === 'en' ? wordsEn : wordsKo);
 
   // 세션 ID 가져오기
   useEffect(() => {
     if (location.state?.sessionId !== undefined) setSessionId(location.state.sessionId);
     if (location.state?.meta) setMeta(location.state.meta);
   }, [location.state]);
-
-  const { addRecording } = useRecordings();
 
   const handleRecordingComplete = async (audioBlob) => {
     setRecording(audioBlob);

@@ -1,0 +1,19 @@
+# Words
+apple
+banana
+orange
+grape
+melon
+peach
+berry
+lemon
+mango
+cherry
+
+# Sentences
+The weather is very nice today.
+I eat fresh fruit every morning.
+Learning English is fun but challenging.
+
+# Paragraph
+Last weekend, I went to the park with my friends. The weather was perfect for a walk. We had a picnic and enjoyed delicious food together. It was a wonderful time, and I would like to go there again soon.

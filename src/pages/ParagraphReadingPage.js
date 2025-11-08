@@ -18,16 +18,16 @@ const ParagraphReadingPage = () => {
   const [uploadStatus, setUploadStatus] = useState(null);
   const [recordingId, setRecordingId] = useState(null);
 
+  const { addRecording, customData } = useRecordings();
+
   const sessionId = location.state?.sessionId;
   const meta = location.state?.meta;
   const wordRecordings = location.state?.wordRecordings || [];
   const sentenceRecordings = location.state?.sentenceRecordings || [];
 
-  // 언어에 따라 문단 선택
+  // 언어에 따라 문단 선택 (커스텀 데이터 우선)
   const assessmentLanguage = meta?.assessment_language || 'ko';
-  const paragraph = assessmentLanguage === 'en' ? paragraphEn : paragraphKo;
-
-  const { addRecording } = useRecordings();
+  const paragraph = customData?.paragraph || (assessmentLanguage === 'en' ? paragraphEn : paragraphKo);
 
   const handleRecordingComplete = async (audioBlob) => {
     setRecording(audioBlob);

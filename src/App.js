@@ -4,6 +4,7 @@ import IndexPage from './pages/IndexPage';
 import InstructionPage from './pages/InstructionPage';
 import MetaInfoPage from './pages/MetaInfoPage';
 import MetaInfoEngPage from './pages/MetaInfoEngPage';
+import SetSelectionPage from './pages/SetSelectionPage';
 import WordReadingPage from './pages/WordReadingPage';
 import SentenceReadingPage from './pages/SentenceReadingPage';
 import ParagraphReadingPage from './pages/ParagraphReadingPage';
@@ -19,6 +20,8 @@ function App() {
           <Route path="/instructions" element={<InstructionPage />} />
           <Route path="/meta" element={<MetaInfoPage />} />
           <Route path="/meta-eng" element={<MetaInfoEngPage />} />
+          <Route path="/set-selection" element={<SetSelectionPage />} />
+          <Route path="/instruction" element={<InstructionPage />} />
           <Route path="/word-reading" element={<WordReadingPage />} />
           <Route path="/sentence-reading" element={<SentenceReadingPage />} />
           <Route path="/paragraph-reading" element={<ParagraphReadingPage />} />

@@ -7,7 +7,7 @@ import { logger } from '../utils/logger';
  * 모든 녹음 파일 ZIP 다운로드 컴포넌트
  */
 const DownloadRecordings = () => {
-  const { recordingStore, metadata } = useRecordings();
+  const { recordingStore, metadata, customScriptRaw } = useRecordings();
   const [zipping, setZipping] = useState(false);
   const [zipError, setZipError] = useState(null);
   const [zipSuccess, setZipSuccess] = useState(false);
@@ -52,6 +52,14 @@ const DownloadRecordings = () => {
         const paragraphFolder = root.folder('paragraph');
         paragraphFolder.file(recordingStore.paragraph.filename, recordingStore.paragraph.blob);
         paragraphFolder.file('paragraph.txt', recordingStore.paragraph.text || '');
+      }
+
+      // 업로드한 원본 스크립트 포함 (있을 때만)
+      if (customScriptRaw && customScriptRaw.trim().length > 0) {
+        // 메타데이터의 평가 언어 기반 파일명 결정 (기본 ko)
+        const lang = (metadata?.assessment_language || 'ko').toLowerCase();
+        const fileLang = lang.startsWith('en') ? 'en' : 'ko';
+        root.file(`custom_script_${fileLang}.txt`, customScriptRaw);
       }
 
       const content = await zip.generateAsync({ type: 'blob' });
