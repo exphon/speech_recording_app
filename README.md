@@ -339,5 +339,3 @@ React App (localhost:3000, HTTP, PM2 관리)
 **exphon** - [GitHub](https://github.com/exphon/speech_recording_app)
 
 ---
-
-**Made with ❤️ for language learners**
