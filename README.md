@@ -1,12 +1,12 @@
 <div align="center">
 
-# 말하기 평가 시스템 (Speech Evaluation System)
+# 말하기 녹음 시스템 (Speech Recording System)
 
-학습자 발음 평가를 위한 웹 기반 음성 녹음 & AI 전사/평가 애플리케이션
+학습자 보이스 분석를 위한 웹 기반 음성 녹음 애플리케이션
 
 <p>
-<strong>단어 → 문장 → 문단</strong> 순서로 읽고 녹음하면 Whisper 전사와 (확장 예정) OpenAI 기반 피드백을 제공하며,<br/>
-이제는 <strong>녹음한 음성과 원문 텍스트를 브라우저에서 즉시 WAV / TXT / ZIP</strong> 형태로 내려받을 수 있습니다.
+<strong>단어 → 문장 → 문단</strong> 순서로 읽고 녹음하면,<br/>
+<strong>녹음한 음성과 원문 텍스트를 브라우저에서 즉시 WAV / TXT / ZIP</strong> 형태로 내려받을 수 있습니다.
 </p>
 
 </div>
@@ -50,7 +50,6 @@
 - 전역 컨텍스트로 녹음 Blob & 원문 텍스트 구조적 보관
 - WebM/Ogg → 16‑bit PCM **WAV 변환** (실패 시 원본 포맷 유지)
 - 개별 WAV & TXT 다운로드 + 전체 ZIP 일괄 다운로드(JSZip)
-- Whisper 전사 & (평가 로직 확장 가능) Levenshtein 기반 유사도 계산
 
 ### UI/경험
 - 단계 진행률, 안내 메시지, 반응형 레이아웃
@@ -187,18 +186,11 @@ node -v   # 18.x 확인
 
 ---
 
-## 🔑 환경 변수 설정
-루트에 `.env` 생성:
-```
-REACT_APP_API_URL=http://210.125.93.241:8020/api
-```
-
 ---
 
 ## 🔄 데이터 흐름
 ```
-사용자 발화 → MediaRecorder 녹음 → Blob/Context 저장 → (선택) 서버 업로드
-  → Whisper 전사 (서버) → 발음 평가(Levenshtein / 확장: OpenAI) → 결과 표시 & 로컬 다운로드
+사용자 발화 → MediaRecorder 녹음 → Blob/Context 저장 → 결과 표시 & 로컬 다운로드
 ```
 
 ---
@@ -211,9 +203,6 @@ REACT_APP_API_URL=http://210.125.93.241:8020/api
 ### RecordingContext
 - 구조화 저장 + WAV 변환 + 다운로드 헬퍼 (downloadBlob, downloadText)
 
-### 전사 & 평가 (서버 필요)
-- `transcribeRecording(recordingId)` → Whisper 결과 저장
-- `evaluatePronunciation` (로컬 Levenshtein) 평균 점수 → 등급(상/중/하)
 
 ---
 
@@ -231,7 +220,6 @@ REACT_APP_API_URL=http://210.125.93.241:8020/api
 1. Node 22 + react-scripts 호환 문제 (빌드/테스트 실패 가능)
 2. 긴 녹음 WAV 변환 시 CPU 급상승
 3. iOS MediaRecorder 제약 → 폴백 미구현
-4. 전사/평가 서버 응답 지연 시 사용자 피드백 부족 (로딩 UI 개선 예정)
 
 ---
 
@@ -239,7 +227,7 @@ REACT_APP_API_URL=http://210.125.93.241:8020/api
 Issue / PR 환영. 코드 스타일: CRA 기본 ESLint 규칙 준수. 대규모 변경 전 이슈로 제안 바랍니다.
 
 ## 📝 라이선스
-교육/연구 목적 내부 사용. 별도 명시 없으면 All Rights Reserved.
+교육 목적 내부 사용. 별도 명시 없으면 All Rights Reserved.
 
 ---
 
@@ -252,7 +240,7 @@ Issue / PR 환영. 코드 스타일: CRA 기본 ESLint 규칙 준수. 대규모 
 ---
 
 ## 🙋 FAQ
-**Q. 서버 없이도 쓸 수 있나요?**  가능. 단, 전사/서버 저장 기능은 제한.
+**Q. 서버 없이도 쓸 수 있나요?**  가능. 
 
 **Q. WAV 변환이 오래 걸려요.** 긴 녹음/저사양 기기일 수 있습니다. 향후 Web Worker 지원 예정.
 
@@ -262,9 +250,6 @@ Issue / PR 환영. 코드 스타일: CRA 기본 ESLint 규칙 준수. 대규모 
 
 ## ✅ 빠른 체크리스트 (운영 전)
 - [ ] Node 18 LTS 사용
-- [ ] `.env` API URL 설정
-- [ ] 서버(Whisper/Django) 가동 확인
-- [ ] 전사/평가 엔드포인트 응답 점검
 - [ ] 긴 녹음(>2분) 변환 테스트
 - [ ] ZIP 다운로드 정상 여부 확인
 
@@ -272,7 +257,7 @@ Issue / PR 환영. 코드 스타일: CRA 기본 ESLint 규칙 준수. 대규모 
 
 즐거운 개발 되세요! 🚀
 
-음성 녹음 기반의 발음 평가 시스템입니다. 사용자가 단어, 문장, 문단을 읽으면 음성을 녹음하고, 서버로 전송하여 AI 기반 평가 및 피드백을 받을 수 있습니다.
+음성 녹음 기반 시스템입니다. 사용자가 단어, 문장, 문단을 읽으면 음성을 녹음하고 다운로드 받을 수 있습니다.
 
 ## 📋 프로젝트 개요
 
@@ -280,8 +265,6 @@ Issue / PR 환영. 코드 스타일: CRA 기본 ESLint 규칙 준수. 대규모 
 1. **단어 읽기**: 10개의 단어를 읽고 녹음
 2. **문장 읽기**: 3개의 문장을 읽고 녹음
 3. **문단 읽기**: 1개의 문단을 읽고 녹음
-4. **평가 및 피드백**: Whisper를 통한 음성 전사 및 OpenAI API를 통한 평가
-5. **적응형 문제**: 평가 결과에 따른 맞춤형 문제 제공
 
 ## 🛠 기술 스택
 
@@ -291,11 +274,6 @@ Issue / PR 환영. 코드 스타일: CRA 기본 ESLint 규칙 준수. 대규모 
 - **Axios**: HTTP 클라이언트
 - **MediaRecorder API**: 브라우저 기반 음성 녹음
 
-### Backend (예정)
-- **Django**: REST API 서버
-- **Whisper**: 음성-텍스트 전사
-- **OpenAI API**: 발음 평가
-- **서버 주소**: 210.125.93.241:8020
 
 ## 📁 프로젝트 구조
 
@@ -455,90 +433,6 @@ npm run build
 | Edge | ✅ | Chromium 기반 |
 | IE | ❌ | 지원 안 함 |
 
-## 🌐 서버 연동
-
-### Django 서버 정보
-- **서버 주소**: 
-- **API 베이스 URL**: /api
-- **녹음 업로드**: /api/recordings/
-
-### API 엔드포인트
-
-```javascript
-// 1. 세션 생성
-POST /api/sessions/
-응답: { session_id: "unique-session-id" }
-
-// 2. 녹음 파일 업로드
-POST /api/recordings/
-Body (FormData):
-  - audio_file: Blob (오디오 파일)
-  - recording_type: "word" | "sentence" | "paragraph"
-  - expected_text: "읽어야 할 텍스트"
-  - session_id: "세션 ID" (선택)
-응답: { id, audio_file, recording_type, expected_text, created_at }
-
-// 3. 녹음 목록 조회
-GET /api/recordings/
-쿼리: ?session_id=xxx&recording_type=word
-응답: [녹음 객체 배열]
-
-// 4. 특정 녹음 조회
-GET /api/recordings/{id}/
-응답: { 녹음 정보 }
-
-// 5. 녹음 처리 (전사 + 평가)
-POST /api/recordings/{id}/process/
-응답: { 
-  transcription: "전사 결과",
-  evaluation: { score, feedback, ... }
-}
-
-// 6. 세션 완료
-POST /api/sessions/{session_id}/complete/
-응답: { session_id, average_score, completed_at }
-
-// 7. 적응형 문제
-GET /api/adaptive-question/?level=상&session_id=xxx
-응답: { question_data }
-```
-
-### 클라이언트 사용 예시
-
-```javascript
-import { 
-  createSession,
-  uploadRecording,
-  processRecording,
-  completeSession 
-} from './services/api';
-
-// 1. 세션 시작
-const session = await createSession();
-const sessionId = session.session_id;
-
-// 2. 녹음 업로드
-const result = await uploadRecording(
-  audioBlob,        // Blob 객체
-  'word',          // 타입
-  '사과',          // 원본 텍스트
-  sessionId        // 세션 ID
-);
-
-// 3. 녹음 처리 (전사 + 평가)
-const processed = await processRecording(result.id);
-console.log(processed.transcription); // "사과"
-console.log(processed.evaluation.score); // "상"
-
-// 4. 세션 완료
-await completeSession(sessionId);
-```
-
-### 환경 변수 설정
-`.env` 파일 생성:
-```
-REACT_APP_API_URL=http://210.125.93.241:8020/api
-```
 
 ## 📊 데이터 흐름
 
@@ -550,27 +444,6 @@ REACT_APP_API_URL=http://210.125.93.241:8020/api
 [Blob 생성 및 메모리 저장]
     ↓
 [CompletionPage - 업로드 버튼 클릭]
-    ↓
-[1. 세션 생성 API 호출]
-    ↓
-[2. FormData로 녹음 파일 전송]
-    ↓
-[Django 서버 - 210.125.93.241:8020]
-    ├─ /api/recordings/ 엔드포인트
-    ├─ 파일 저장 (media/recordings/)
-    └─ DB에 메타데이터 저장
-    ↓
-[3. 녹음 처리 요청 (선택)]
-    ├─ Whisper 음성 전사 (서버 측)
-    └─ OpenAI API 발음 평가 (서버 측)
-    ↓
-[평가 결과 반환]
-    ├─ 전사 텍스트
-    ├─ 평가 점수 (상/중/하)
-    └─ 상세 피드백
-    ↓
-[4. 적응형 문제 생성]
-    └─ 평가 레벨 기반 문제 제공
 ```
 
 ## 🎨 디자인 특징
@@ -589,20 +462,7 @@ REACT_APP_API_URL=http://210.125.93.241:8020/api
 - ✅ 페이지 라우팅
 - ✅ UI/UX 구현
 
-### Phase 2 (진행 중)
-- ✅ 서버 API 연동 완료
-- ✅ 녹음 파일 업로드 기능
-- ✅ 세션 관리 시스템
-- ⏳ Django 서버 구축 (API 준비 완료)
-- ⏳ Whisper 음성 전사 연동
-- ⏳ OpenAI API 평가 시스템
-- ⏳ 데이터베이스 설계
 
-### Phase 3 (계획)
-- 📝 적응형 문제 알고리즘
-- 📝 사용자 인증 시스템
-- 📝 평가 결과 대시보드
-- 📝 통계 및 분석 기능
 
 ## 🐛 알려진 이슈
 
@@ -626,39 +486,7 @@ REACT_APP_API_URL=http://210.125.93.241:8020/api
 
 **개발 일자**: 2025년 10월 21-22일  
 **버전**: 1.1.0  
-**상태**: Phase 2 진행 중 (서버 업로드 기능 완료)
 
-## 💾 녹음 파일 저장 및 처리 방식
 
-### 현재 구현
-- **메모리 저장**: 녹음 중에는 Blob 객체로 메모리에 저장
-- **서버 업로드**: CompletionPage에서 "서버에 업로드하기" 버튼 클릭 시 업로드
-- **세션 관리**: 세션 ID로 여러 녹음을 그룹화하여 관리
-
-### 업로드 프로세스
-1. **세션 생성**: `POST /api/sessions/` → 세션 ID 발급
-2. **순차 업로드**: 단어(10개) → 문장(3개) → 문단(1개)
-3. **진행률 표시**: 실시간 업로드 진행률 (0-100%)
-4. **에러 처리**: 실패 시 재시도 가능
-
-### 서버 측 처리 (예정)
-```
-업로드된 파일
-  ↓
-Django media/recordings/ 저장
-  ↓  
-DB에 메타데이터 기록
-  ↓
-Whisper 음성 전사 (서버에서 실행)
-  ↓
-OpenAI API 평가 (서버에서 실행)
-  ↓
-결과 저장 및 반환
-```
-
-### ⚠️ 중요 사항
-- **로컬 저장 없음**: 녹음 파일은 브라우저 메모리에만 존재
-- **새로고침 주의**: 업로드 전 새로고침 시 모든 녹음 삭제됨
-- **서버 필수**: AI 처리(Whisper, OpenAI)는 서버에서만 가능
 
 # speech_recording_app
