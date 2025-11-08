@@ -50,13 +50,6 @@ const WordReadingPage = () => {
       // 문장 읽기로 이동
       navigate('/sentence-reading', { 
         state: { 
-          // 단어 전체 녹음 1개를 다음 페이지로 전달 (ID 포함)
-          wordRecordings: [
-            {
-              id: recordingId,
-              title: recordingTitle,
-            }
-          ],
           sessionId: sessionId,
           meta: meta,
         }
