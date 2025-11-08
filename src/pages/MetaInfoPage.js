@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useRecordings } from '../contexts/RecordingContext';
 import './MetaInfoPage.css';
 
 const currentYear = new Date().getFullYear();
@@ -7,6 +8,7 @@ const currentYear = new Date().getFullYear();
 const MetaInfoPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { setMetadata } = useRecordings();
   
   // InstructionPage에서 전달받은 언어 (기본값: 한국어)
   const assessmentLanguage = location.state?.language || 'ko';
@@ -46,6 +48,9 @@ const MetaInfoPage = () => {
     };
 
     setSubmitting(true);
+    
+    // Context에 메타정보 저장
+    setMetadata(metadata);
 
     // 로컬 녹음으로 바로 진행 (서버 세션 생성 제거)
     navigate('/word-reading', {

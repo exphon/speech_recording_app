@@ -24,6 +24,7 @@ export const RecordingProvider = ({ children }) => {
     paragraph: null
   });
   const [participantId, setParticipantId] = useState('');
+  const [metadata, setMetadata] = useState(null); // 메타정보 저장
 
   /**
    * MediaRecorder blob을 WAV로 변환 (webm/ogg → pcm wav)
@@ -171,6 +172,7 @@ export const RecordingProvider = ({ children }) => {
   const resetRecordings = useCallback(() => {
     setRecordingStore({ words: null, sentences: [], paragraph: null });
     setParticipantId('');
+    setMetadata(null);
   }, []);
 
   /** 개별 다운로드용 헬퍼 */
@@ -197,6 +199,8 @@ export const RecordingProvider = ({ children }) => {
     resetRecordings,
     participantId,
     setParticipantId,
+    metadata,
+    setMetadata,
     downloadBlob,
     downloadText
   };

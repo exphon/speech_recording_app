@@ -7,7 +7,7 @@ import { logger } from '../utils/logger';
  * 모든 녹음 파일 ZIP 다운로드 컴포넌트
  */
 const DownloadRecordings = () => {
-  const { recordingStore } = useRecordings();
+  const { recordingStore, metadata } = useRecordings();
   const [zipping, setZipping] = useState(false);
   const [zipError, setZipError] = useState(null);
   const [zipSuccess, setZipSuccess] = useState(false);
@@ -23,6 +23,12 @@ const DownloadRecordings = () => {
     try {
       const zip = new JSZip();
       const root = zip.folder('recordings');
+
+      // 메타정보 JSON 파일 추가
+      if (metadata) {
+        const metadataJson = JSON.stringify(metadata, null, 2);
+        root.file('metadata.json', metadataJson);
+      }
 
       // 단어
       if (recordingStore.words) {
