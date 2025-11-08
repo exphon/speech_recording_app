@@ -19,6 +19,8 @@
 ### 1️⃣ 메인/메타정보
 - 언어 선택 후, 해당 언어 메타정보를 입력합니다.
 - 메타정보 완료 시 “데이터 선택” 단계로 이동합니다.
+  
+  예시 화면: ![Meta Info](public/screenshots/meta_info.png)
 
 ### 2️⃣ 데이터 선택 (SetSelectionPage)
 - 기본 세트: 내장된 단어/문장/문단을 사용
@@ -26,6 +28,8 @@
   - 업로드 즉시 포맷 검증 수행
   - 형식 오류 시 상세 에러(한/영) 표시 및 업로드 취소
   - 성공 시 이후 녹음 단계에서 해당 내용이 표시됩니다.
+  
+  예시 화면: ![Set Selection](public/screenshots/set_selection.png)
 
 업로드 포맷:
 ```
@@ -59,18 +63,26 @@ Sentence 3
   - 녹음 시작/중지
   - 다시 녹음
   - 다음으로 이동
+  
+  예시 화면: ![Word Reading](public/screenshots/word_reading.png)
 
 ### 4️⃣ 문장 읽기 (SentenceReadingPage)
 - 3개 문장을 개별로 녹음합니다.
 - 각 문장에 대해 시작/중지, 재녹음 후 다음으로 이동합니다.
+  
+  예시 화면: ![Sentence Reading](public/screenshots/sentence_reading.png)
 
 ### 5️⃣ 문단 읽기 (ParagraphReadingPage)
 - 1개 문단을 한 번에 녹음합니다.
 - 읽기 팁: 또박또박, 자연스러운 쉼, 일정한 음량을 유지하세요.
+  
+  예시 화면: ![Paragraph Reading](public/screenshots/paragraph_reading.png)
 
 ### 6️⃣ 완료 (CompletionPage)
 - ZIP 다운로드 버튼을 통해 모든 녹음과 텍스트, 메타정보를 한 번에 내려받습니다.
 - 업로드 원본(.txt)을 사용했다면 ZIP 루트에 `custom_script_{ko|en}.txt`가 포함됩니다.
+  
+  예시 화면: ![Completion](public/screenshots/completion.png)
 
 ZIP 구조:
 ```
@@ -126,3 +138,8 @@ recordings_YYYYMMDDHHMMSS.zip
 ---
 
 최종 업데이트: 2025년 11월 08일
+
+부록: 스크린샷 추가 방법
+1) `public/screenshots/` 폴더에 이미지 파일(PNG/JPG) 추가
+2) 위 문서의 이미지 경로(파일명)를 상황에 맞게 교체
+3) `git add` → `commit` → `push`
