@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useRecording } from '../contexts/RecordingContext';
 import './SetSelectionPage.css';
 
 function SetSelectionPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { language, setCustomData, setCustomScriptRaw } = useRecording();
   const [selectionType, setSelectionType] = useState(null);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [parseError, setParseError] = useState('');
+
+  // 이전 페이지(MetaInfoPage)에서 전달받은 meta 정보
+  const meta = location.state?.meta;
 
   const handleSelectionTypeClick = (type) => {
     setSelectionType(type);
@@ -104,7 +108,11 @@ function SetSelectionPage() {
     if (selectionType === 'default') {
       // 기본 세트 사용
       setCustomData(null);
-      navigate('/word-reading');
+      navigate('/word-reading', {
+        state: {
+          meta: meta,
+        }
+      });
     } else if (selectionType === 'upload' && uploadedFile) {
       // 파일이 이미 검증되었으므로 파싱만 수행
       try {
@@ -112,7 +120,11 @@ function SetSelectionPage() {
         const parsedData = parseTextFile(text);
         setCustomScriptRaw(text); // 안전하게 다시 저장
         setCustomData(parsedData);
-        navigate('/word-reading');
+        navigate('/word-reading', {
+          state: {
+            meta: meta,
+          }
+        });
       } catch (error) {
         // 이론적으로는 여기 도달하지 않지만 안전장치
         setParseError(error.message);
