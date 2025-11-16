@@ -4,7 +4,7 @@ import './CompletionPage.css';
 import DownloadRecordings from '../components/DownloadRecordings';
 
 /**
- * 평가 완료 페이지 (로컬 다운로드 전용)
+ * 녹음 완료 페이지 (로컬 다운로드 전용)
  */
 const CompletionPage = () => {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const CompletionPage = () => {
         <div className="success-icon">🎉</div>
         
         <h1 className="completion-title">
-          발음 평가 녹음이 완료되었습니다!
+          말소리 녹음이 완료되었습니다!
         </h1>
         
         <p className="completion-message">

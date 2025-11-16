@@ -63,8 +63,8 @@ const MetaInfoPage = () => {
   return (
     <div className="meta-page">
       <div className="meta-container">
-        <h1 className="meta-title">참여자 메타정보 (한국어 발음 평가)</h1>
-        <p className="meta-subtitle">평가 전에 간단한 정보를 입력해주세요.</p>
+        <h1 className="meta-title">참여자 메타정보 (한국어 녹음)</h1>
+        <p className="meta-subtitle">녹음 전에 간단한 정보를 입력해주세요.</p>
 
         <form className="meta-form" onSubmit={handleSubmit}>
           <div className="form-row">

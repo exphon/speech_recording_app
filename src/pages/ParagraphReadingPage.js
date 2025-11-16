@@ -115,7 +115,7 @@ const ParagraphReadingPage = () => {
                     className="next-button"
                     onClick={handleNext}
                   >
-                    평가 완료 →
+                    말소리 녹음 완료 →
                   </button>
                 </>
               )}

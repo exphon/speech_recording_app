@@ -31,9 +31,9 @@ const InstructionPage = () => {
         
         <div className="instruction-content">
           <section className="instruction-section">
-            <h2>📋 평가 진행 방법</h2>
+            <h2>📋 녹음 진행 방법</h2>
             <div className="instruction-text">
-              <p>본 평가는 총 3단계로 진행됩니다:</p>
+              <p>본 녹음은 총 3단계로 진행됩니다:</p>
               <ol>
                 <li><strong>단어 읽기</strong>: 화면에 제시되는 10개의 단어를 또박또박 읽어주세요.</li>
                 <li><strong>문장 읽기</strong>: 3개의 문장을 자연스럽게 읽어주세요.</li>
@@ -58,7 +58,7 @@ const InstructionPage = () => {
             <h2>⚠️ 주의사항</h2>
             <div className="instruction-text">
               <ul>
-                <li>조용한 환경에서 평가를 진행해주세요.</li>
+                <li>조용한 환경에서 녹음을 진행해주세요.</li>
                 <li>마이크와 적절한 거리(약 30cm)를 유지해주세요.</li>
                 <li>너무 빠르거나 느리지 않게, 자연스러운 속도로 읽어주세요.</li>
                 <li>녹음 중에는 브라우저를 새로고침하거나 뒤로가기를 하지 마세요.</li>
@@ -84,7 +84,7 @@ const InstructionPage = () => {
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
               />
-              <span>위 내용을 모두 확인했으며, 평가 진행에 동의합니다.</span>
+              <span>위 내용을 모두 확인했으며, 말소리 녹음 진행에 동의합니다.</span>
             </label>
           </div>
 
@@ -100,7 +100,7 @@ const InstructionPage = () => {
               onClick={handleAgree}
               disabled={!agreed}
             >
-              평가 시작하기 →
+              음성 녹음 시작하기 →
             </button>
           </div>
         </div>

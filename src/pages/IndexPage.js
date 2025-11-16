@@ -3,18 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import './IndexPage.css';
 
 /**
- * 메인 페이지 - 환영 메시지와 발음평가/말하기평가 선택
+ * 메인 페이지 - 환영 메시지와 한국어/영어 녹음 선택
  */
 const IndexPage = () => {
   const navigate = useNavigate();
 
   const handleKoreanClick = () => {
-    // 한국어 발음평가 참가
+    // 한국어 녹음 참가
     navigate('/instructions', { state: { language: 'ko' } });
   };
 
   const handleEnglishClick = () => {
-    // 영어 발음평가 참가
+    // 영어 녹음 참가
     navigate('/instructions', { state: { language: 'en' } });
   };
 
@@ -46,13 +46,13 @@ const IndexPage = () => {
                   className="join-button korean"
                   onClick={handleKoreanClick}
                 >
-                  🇰🇷 한국어 발음 녹음 참가하기
+                  🇰🇷 한국어 녹음 참가하기
                 </button>
                 <button 
                   className="join-button english"
                   onClick={handleEnglishClick}
                 >
-                  🇺🇸 영어 발음 녹음 참가하기
+                  🇺🇸 영어 녹음 참가하기
                 </button>
               </div>
             </div>
